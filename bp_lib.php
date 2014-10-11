@@ -2,12 +2,12 @@
 
 /**
  * Copyright (c) 2011-2014 BITPAY, INC.
- *  
- * Bitcoin PHP payment library using the bitpay.com service. You can always 
+ *
+ * Bitcoin PHP payment library using the bitpay.com service. You can always
  * download the latest version at https://github.com/bitpay/php-client
- * 
+ *
  * PHP Version 5
- * 
+ *
  * License: Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the "Software"), to
  * deal in the Software without restriction, including without limitation the rights
@@ -15,7 +15,7 @@
  * of the Software, and to permit persons to whom the Software is furnished to do
  * so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all 
+ * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -25,7 +25,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * 
+ *
  * @category   Bitcoin
  * @package    Bitcoin\BitPay\PHP-Client-Library
  * @author     Rich Morgan <rich@bitpay.com>
@@ -45,16 +45,16 @@ define('VERSION', '1.9');
 
 
 /**
- * Writes $contents to the system logger which is usually the webserver's error log 
+ * Writes $contents to the system logger which is usually the webserver's error log
  * but can be changed depending on your development requirements.
  *
  * @param mixed $contents
  * @return boolean
- * @throws Exception $e 
+ * @throws Exception $e
  */
 function bpLog($contents) {
   global $bpOptions;
-  
+
   if (!isset($contents) || trim($contents) == '' || is_null($contents) || empty($contents))
     return 'Error in bpLog(): Nothing to log was supplied. Usage: bpLog($contents)';
 
@@ -112,7 +112,7 @@ function bpHost() {
  * @throws Exception $e
  */
 function bpCurl($url, $apiKey, $post = false) {
-  global $bpOptions;	
+  global $bpOptions;
 
   /*
    * Container for our curl response or any error messages to return
@@ -150,7 +150,7 @@ function bpCurl($url, $apiKey, $post = false) {
 
         /*
          * If you are having SSL certificate errors due to an outdated CA cert on your webserver
-         * ask your webhosting provider to update your webserver.  The curl SSL checks are used 
+         * ask your webhosting provider to update your webserver.  The curl SSL checks are used
          * to ensure you are actually communicating with the real BitPay network.
          */
         curl_setopt($curl, CURLOPT_URL, $url);
@@ -217,7 +217,7 @@ function bpCurl($url, $apiKey, $post = false) {
       }
 
     } catch (Exception $e) {
-      
+
       /*
        * It's possible that an error could occur before curl is initialized.  In that case
        * it is safe to suppress the warning message from calling curl_close without an
@@ -254,7 +254,7 @@ function bpCurl($url, $apiKey, $post = false) {
  */
 function bpCreateInvoice($orderId, $price, $posData = '', $options = array()) {
 
-  /* 
+  /*
    * $orderId: Used to display an orderID to the buyer. In the account summary view, this value is used to
    * identify a ledger entry if present. Maximum length is 100 characters.
    *
@@ -278,7 +278,7 @@ function bpCreateInvoice($orderId, $price, $posData = '', $options = array()) {
    * (see api documentation for information on these options).
    */
 
-  global $bpOptions;	
+  global $bpOptions;
 
   if (!isset($orderId) || is_null($orderId) || trim($orderId) == '' || empty($orderId))
     return 'Error in bpCreateInvoice(): No orderId supplied to function. Usage: bpCreateInvoice($orderId, $price, $posData, $options)';
@@ -290,7 +290,7 @@ function bpCreateInvoice($orderId, $price, $posData = '', $options = array()) {
     $options = array_merge($bpOptions, $options);
     $pos = array('posData' => $posData);
 
-    if ($bpOptions['verifyPos']) 
+    if ($bpOptions['verifyPos'])
       $pos['hash'] = bpHash(serialize($posData), $options['apiKey']);
 
     if (function_exists('json_encode'))
@@ -304,8 +304,8 @@ function bpCreateInvoice($orderId, $price, $posData = '', $options = array()) {
     $options['orderID'] = $orderId;
     $options['price'] = $price;
 
-    $postOptions = array('orderID', 'itemDesc', 'itemCode', 'notificationEmail', 'notificationURL', 'redirectURL', 
-                         'posData', 'price', 'currency', 'physical', 'fullNotifications', 'transactionSpeed', 'buyerName', 
+    $postOptions = array('orderID', 'itemDesc', 'itemCode', 'notificationEmail', 'notificationURL', 'redirectURL',
+                         'posData', 'price', 'currency', 'physical', 'fullNotifications', 'transactionSpeed', 'buyerName',
                          'buyerAddress1', 'buyerAddress2', 'buyerCity', 'buyerState', 'buyerZip', 'buyerEmail', 'buyerPhone');
 
     foreach($postOptions as $o) {
@@ -341,8 +341,8 @@ function bpVerifyNotification($apiKey = false) {
   global $bpOptions;
 
   try {
-    if (!$apiKey) 
-      $apiKey = $bpOptions['apiKey'];		
+    if (!$apiKey)
+      $apiKey = $bpOptions['apiKey'];
 
     /*
      * There's a PHP quirk when reading a pure JSON POST response.  The $_POST global will be empty
@@ -375,7 +375,11 @@ function bpVerifyNotification($apiKey = false) {
 
     $json['posData'] = $posData['posData'];
 
-    return $json;
+    if (!array_key_exists('id', $json))
+    {
+        return 'Cannot find invoice ID';
+    }
+    return bpGetInvoice($json['id'], $apiKey);
 
   } catch (Exception $e) {
     if ($bpOptions['useLogging'])
@@ -425,7 +429,7 @@ function bpGetInvoice($invoiceId, $apiKey=false) {
 }
 
 /**
- * Generates a base64 encoded keyed hash using the HMAC method. For more 
+ * Generates a base64 encoded keyed hash using the HMAC method. For more
  * information, see: http://www.php.net/manual/en/function.hash-hmac.php
  *
  * @param string $data, string $key
@@ -456,14 +460,14 @@ function bpHash($data, $key) {
 
 /**
  * Decodes JSON response and returns an associative array.
- * 
+ *
  * @param string $response
  * @return array $arrResponse
  * @throws Exception $e
  */
 function bpDecodeResponse($response) {
   global $bpOptions;
-  
+
   try {
 
     if (!is_string($response) || is_null($response) || trim($response) == '' || empty($response))
@@ -484,7 +488,7 @@ function bpDecodeResponse($response) {
 
 /**
  * Retrieves a list of all supported currencies and returns an associative array.
- * 
+ *
  * @param none
  * @return array $currencies
  * @throws Exception $e
@@ -516,9 +520,9 @@ function bpCurrencyList() {
 }
 
 /**
- * Retrieves the current rate based on $code. The default code us USD, so calling the 
+ * Retrieves the current rate based on $code. The default code us USD, so calling the
  * function without a parameter will return the current BTC/USD price.
- * 
+ *
  * @param string $code
  * @return string $rate
  * @throws Exception $e
@@ -555,7 +559,7 @@ function bpGetRate($code = 'USD') {
 /**
  * Fallback JSON decoding function in the event you do not have the PHP JSON extension installed and
  * cannot install it.  This function takes an encoded string and returns an associative array.
- * 
+ *
  * @param string $jsondata
  * @return array $jsonarray
  */
@@ -608,7 +612,7 @@ function bpJSONdecode($jsondata) {
 
     while($x < strlen($jsondata) && $jsondata[$x] == ' ')
       $x++;
-  
+
     switch($jsondata[$x]) {
       case '[':
         $level++;
@@ -640,7 +644,7 @@ function bpJSONdecode($jsondata) {
    }
 
     if ($level > 0) {
- 
+
       while($x< strlen($jsondata) && $level > 0) {
         $val .= $jsondata[$x];
         $x++;
@@ -668,7 +672,7 @@ function bpJSONdecode($jsondata) {
 
       while($x < strlen($jsondata) && ($jsondata[$x] == ' ' || $jsondata[$x] == ',' || $jsondata[$x] == ']' || $jsondata[$x] == '}'))
         $x++;
-  
+
     } else {
 
       while($x < strlen($jsondata) && $jsondata[$x] != ',') {
@@ -694,7 +698,7 @@ function bpJSONdecode($jsondata) {
 /**
  * Fallback JSON encoding function in the event you do not have the PHP JSON extension installed and
  * cannot install it.  This function takes data in various forms and returns a JSON encoded string.
- * 
+ *
  * @param mixed $data
  * @return string $jsondata
  */
@@ -736,8 +740,8 @@ function bpJSONencode($data) {
 }
 
 /**
- * Fallback cURL error string function in the event you do not have PHP >= 5.5.0 installed.  These cURL 
- * error codes and descriptions were retrieved from the official libcurl error documentation.  See: 
+ * Fallback cURL error string function in the event you do not have PHP >= 5.5.0 installed.  These cURL
+ * error codes and descriptions were retrieved from the official libcurl error documentation.  See:
  * http://curl.haxx.se/libcurl/c/libcurl-errors.html
  *
  * @param integer $errorno
