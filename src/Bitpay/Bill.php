@@ -102,7 +102,7 @@ class Bill implements BillInterface
      */
     public function addItem(ItemInterface $item)
     {
-        if (!empty($item)) {
+        if (false === empty($item)) {
             $this->items[] = $item;
         }
 
@@ -124,7 +124,7 @@ class Bill implements BillInterface
      */
     public function setCurrency(CurrencyInterface $currency)
     {
-        if (!empty($currency)) {
+        if (false === empty($currency)) {
             $this->currency = $currency;
         }
 
@@ -146,7 +146,7 @@ class Bill implements BillInterface
      */
     public function setName($name)
     {
-        if (!empty($name) && ctype_print($name)) {
+        if (false === empty($name) && true === ctype_print($name)) {
             $this->name = trim($name);
         }
 
@@ -168,7 +168,7 @@ class Bill implements BillInterface
      */
     public function setAddress($address)
     {
-        if (!empty($address) && is_array($address)) {
+        if (false === empty($address) && true === is_array($address)) {
             $this->address = $address;
         }
 
@@ -190,7 +190,7 @@ class Bill implements BillInterface
      */
     public function setCity($city)
     {
-        if (!empty($city) && ctype_print($city)) {
+        if (false === empty($city) && true === ctype_print($city)) {
             $this->city = trim($city);
         }
 
@@ -212,7 +212,7 @@ class Bill implements BillInterface
      */
     public function setState($state)
     {
-        if (!empty($state) && ctype_print($state)) {
+        if (false === empty($state) && true === ctype_print($state)) {
             $this->state = trim($state);
         }
 
@@ -234,7 +234,7 @@ class Bill implements BillInterface
      */
     public function setZip($zip)
     {
-        if (!empty($zip) && ctype_print($zip)) {
+        if (false === empty($zip) && true === ctype_print($zip)) {
             $this->zip = trim($zip);
         }
 
@@ -256,7 +256,7 @@ class Bill implements BillInterface
      */
     public function setCountry($country)
     {
-        if (!empty($country) && ctype_print($country)) {
+        if (false === empty($country) && true === ctype_print($country)) {
             $this->country = trim($country);
         }
 
@@ -278,7 +278,7 @@ class Bill implements BillInterface
      */
     public function setEmail($email)
     {
-        if (!empty($email) && ctype_print($email)) {
+        if (false === empty($email) && true === ctype_print($email)) {
             $this->email = trim($email);
         }
 
@@ -300,7 +300,7 @@ class Bill implements BillInterface
      */
     public function setPhone($phone)
     {
-        if (!empty($phone) && ctype_print($phone)) {
+        if (false === empty($phone) && true === ctype_print($phone)) {
             $this->phone = trim($phone);
         }
 
@@ -322,7 +322,7 @@ class Bill implements BillInterface
      */
     public function setStatus($status)
     {
-        if (!empty($status) && ctype_print($status)) {
+        if (false === empty($status) && true === ctype_print($status)) {
             $this->status = trim($status);
         }
 
@@ -344,7 +344,7 @@ class Bill implements BillInterface
      */
     public function setShowRate($showRate)
     {
-        if (!empty($showRate) && ctype_print($showRate)) {
+        if (false === empty($showRate) && true === ctype_print($showRate)) {
             $this->showRate = trim($showRate);
         }
 
