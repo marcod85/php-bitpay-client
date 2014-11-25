@@ -42,14 +42,15 @@ class Autoloader
     public static function autoload($class)
     {
         $isBitpay = false;
+        $upLevl = DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
 
         if (0 === strpos($class, 'Bitpay\\')) {
             $isBitpay = true;
         }
 
-        $file = __DIR__.'/../'.str_replace(array('\\'), array('/'), $class).'.php';
+        $file = __DIR__ . $upLevl . str_replace('\\', DIRECTORY_SEPARATOR, $class).'.php';
 
-        if (is_file($file) && is_readable($file)) {
+        if (true === is_file($file) && true === is_readable($file)) {
             require_once $file;
 
             return true;
