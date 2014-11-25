@@ -48,7 +48,10 @@ class AccessToken implements AccessTokenInterface
      */
     public function setId($id)
     {
-        if (!empty($id) && is_string($id) && ctype_print($id)) {
+        if (false === empty($id)     &&
+            true  === is_string($id) &&
+            true  === ctype_print($id))
+        {
             $this->id = trim($id);
         }
 
@@ -70,7 +73,10 @@ class AccessToken implements AccessTokenInterface
      */
     public function setEmail($email)
     {
-        if (!empty($email) && is_string($email) && ctype_print($email)) {
+        if (false === empty($email)     &&
+            true  === is_string($email) &&
+            true  === ctype_print($email))
+        {
             $this->email = trim($email);
         }
 
@@ -92,7 +98,10 @@ class AccessToken implements AccessTokenInterface
      */
     public function setLabel($label)
     {
-        if (!empty($label) && is_string($label) && ctype_print($label)) {
+        if (false === empty($label)     &&
+            true  === is_string($label) &&
+            true  === ctype_print($label))
+        {
             $this->label = trim($label);
         }
 
