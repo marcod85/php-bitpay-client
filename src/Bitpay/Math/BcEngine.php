@@ -239,8 +239,8 @@ class BcEngine implements EngineInterface
                     $small = $a;
                     $diff  = bcmod($b, $a);
                     break;
-        		default:
-        			throw new \Exception('[ERROR] In BcEngine::coprime(): Comparison of the two parameters produced an invalid result.');
+                default:
+                    throw new \Exception('[ERROR] In BcEngine::coprime(): Comparison of the two parameters produced an invalid result.');
             }
 
             $a = $small;
