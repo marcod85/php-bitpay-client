@@ -9,11 +9,18 @@ namespace Bitpay\Math;
 /**
  * Math interface class which handles the routing to the correct engine,
  * either GMP or BC, for all math operations with the former preferred.
+ * 
+ * @package Bitpay
  */
 class Math
 {
     private static $engine = null;
 
+    /**
+     * Sets the Math::$engine property if not null.
+     * 
+     * @param object $engine  Either a GMP or BC Math engine object.
+     */
     public static function setEngine($engine)
     {
         if (true === isset($engine)) {
@@ -21,11 +28,24 @@ class Math
         }
     }
 
+    /**
+     * Returns the Math::$engine object or null if not set.
+     * 
+     * @return object|null  Can be null, otherwise returns a GMP or BC Math engine object.
+     */
     public static function getEngine()
     {
         return static::$engine;
     }
 
+    /**
+     * Intercepts the call for math operation and hands it off to
+     * the correct mathematics engine, either a GMP or BC Math object.
+     * 
+     * @param  string $name      The math operation name, i.e. add, mod, sub...
+     * @param  mixed  $arguments The operations for that particular operation.
+     * @return mixed             Either result of the operation or error.
+     */
     public static function __callStatic($name, $arguments)
     {
         if (false === isset(static::$engine) || true === empty(static::$engine)) {
@@ -39,7 +59,7 @@ class Math
         }
 
         /*
-         * Check to ensure our math function name and the 
+         * Check to ensure our math function name and the
          * requisite parameters were passed to this function.
          */
         if (true  === isset($name) && true  === isset($arguments) &&
