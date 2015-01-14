@@ -43,47 +43,67 @@ class Bitpay
     {
         $this->container = $container;
 
-        if (is_null($container)) {
+        if (true === is_null($container)) {
             $this->initializeContainer($config);
         }
     }
 
     /**
      * Initialize the container
+     *
+     * @param mixed $config
      */
     protected function initializeContainer($config)
     {
         $this->container = $this->buildContainer($config);
-        $this->container->compile();
+        
+        if (true === isset($this->container) && false === empty($this->container)) {
+            $this->container->compile();
+        } else {
+            throw new \Exception('[ERROR] In Bitpay::initializeContainer(): Could not initialize the container object.');
+        }
     }
 
     /**
      * Build the container of services and parameters
+     *
+     * @return object $container
      */
     protected function buildContainer($config)
     {
         $container = new ContainerBuilder(new ParameterBag($this->getParameters()));
 
-        $this->prepareContainer($container);
-        $this->getContainerLoader($container)->load($config);
+        if (true === isset($container) && false === empty($container)) {
+            $this->prepareContainer($container);
+            $this->getContainerLoader($container)->load($config);
+        } else {
+            throw new \Exception('[ERROR] In Bitpay::buildContainer(): Could not initialize the container object.');
+        }
 
         return $container;
     }
 
+    /**
+     * Returns the absolute root directory path for this project.
+     *
+     * @return array
+     */
     protected function getParameters()
     {
-        return array(
-            'bitpay.root_dir' => realpath(__DIR__.'/..'),
-        );
+        return array('bitpay.root_dir' => realpath(__DIR__.'/..'),);
     }
 
     /**
      */
     private function prepareContainer(ContainerInterface $container)
     {
-        foreach ($this->getDefaultExtensions() as $ext) {
-            $container->registerExtension($ext);
-            $container->loadFromExtension($ext->getAlias());
+        if (true === isset($container) && false === empty($container)) {
+            foreach ($this->getDefaultExtensions() as $ext) {
+                $container->registerExtension($ext);
+                $container->loadFromExtension($ext->getAlias());
+            }
+        } else {
+            throw new \Exception('[ERROR] In Bitpay::prepareContainer(): Missing or invalid $container parameter.');
         }
     }
 
@@ -93,15 +113,21 @@ class Bitpay
      */
     private function getContainerLoader(ContainerInterface $container)
     {
-        $locator  = new FileLocator();
-        $resolver = new LoaderResolver(
-            array(
-                new ArrayLoader($container),
-                new YamlFileLoader($container, $locator),
-            )
-        );
+        if (true === isset($container) && false === empty($container)) {
+            $locator  = new FileLocator();
 
-        return new DelegatingLoader($resolver);
+            $resolver = new LoaderResolver(
+                array(
+                    new ArrayLoader($container),
+                    new YamlFileLoader($container, $locator),
+                )
+            );
+
+            return new DelegatingLoader($resolver);
+
+        } else {
+            throw new \Exception('[ERROR] In Bitpay::getContainerLoader(): Missing or invalid $container parameter.');
+        }
     }
 
     /**
@@ -111,9 +137,7 @@ class Bitpay
      */
     private function getDefaultExtensions()
     {
-        return array(
-            new BitpayExtension(),
-        );
+        return array(new BitpayExtension(),);
     }
 
     /**
@@ -129,6 +153,10 @@ class Bitpay
      */
     public function get($service)
     {
-        return $this->container->get($service);
+        if (true === isset($container) && false === empty($container)) {
+            return $this->container->get($service);
+        } else {
+            throw new \Exception('[ERROR] In Bitpay::get(): Could not get $service because the $container object is missing or invalid.');
+        }
     }
 }
