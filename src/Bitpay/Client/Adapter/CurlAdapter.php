@@ -11,9 +11,8 @@ use Bitpay\Client\ResponseInterface;
 use Bitpay\Client\Response;
 
 /**
- * Adapter that sends Request objects using CURL
- *
- * @TODO add way to configure curl with options
+ * Adapter that sends Request objects using CURL. This class makes use of the root cert obtained
+ * from the official curl website: http://curl.haxx.se/ca/cacert.pem
  *
  * @package Bitpay
  */
