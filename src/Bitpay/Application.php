@@ -7,6 +7,8 @@
 namespace Bitpay;
 
 /**
+ * This class represents an application for a new merchant account.
+ * see https://bitpay.com/api#resource-Applications
  *
  * @package Bitpay
  */
@@ -55,8 +57,14 @@ class Application implements ApplicationInterface
      */
     public function addUser(UserInterface $user)
     {
-        if (false === empty($user)) {
-            $this->users[] = $user;
+        if (true === isset($user) && false === empty($user)) {
+            /*
+             * Use scrict type checking to see if this $user is
+             * already in the $users array and add if not.
+             */
+            if (false === in_array($user, $this->users, true)) {
+                $this->users[] = $user;
+            }
         }
 
         return $this;
@@ -71,8 +79,14 @@ class Application implements ApplicationInterface
      */
     public function addOrg(OrgInterface $org)
     {
-        if (false === empty($org)) {
-            $this->orgs[] = $org;
+        if (true === isset($org) && false === empty($org)) {
+            /*
+             * Use scrict type checking to see if this $org is
+             * already in the $orgs array and add if not.
+             */
+            if (false === in_array($org, $this->orgs, true)) {
+                $this->orgs[] = $org;
+            }
         }
 
         return $this;
