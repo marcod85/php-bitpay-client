@@ -45,6 +45,7 @@ class AccessToken implements AccessTokenInterface
          * Set various defaults for this object.
          */
         $this->useNonce = true;
+        $this->count    = 0;
     }
 
     /**
@@ -120,6 +121,23 @@ class AccessToken implements AccessTokenInterface
     public function getLabel()
     {
         return $this->label;
+    }
+
+    /**
+     * @param int $number
+     *
+     * @return AccessTokenInterface
+     */
+    public function setCount($number)
+    {
+        if (true  === isset($number)     &&
+            false === empty($number)     &&
+            true  === is_int($number))
+        {
+            $this->count = $number;
+        }
+
+        return $this;
     }
 
     /**
