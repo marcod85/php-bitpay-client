@@ -25,11 +25,17 @@ class CurlAdapter implements AdapterInterface
     protected $curlOptions;
 
     /**
+     * @var array
+     */
+    protected $lastTransferStats;
+
+    /**
      * @param array $curlOptions
      */
     public function __construct(array $curlOptions = array())
     {
         $this->curlOptions = $curlOptions;
+        $this->lastTransferStats = array();
     }
 
     /**
@@ -47,12 +53,20 @@ class CurlAdapter implements AdapterInterface
      */
     public function sendRequest(RequestInterface $request)
     {
+        if (false === isset($request) || true === empty($request)) {
+            throw new \Bitpay\Client\ConnectionException('[ERROR] In CurlAdapter::sendRequest(): Missing or invalid $request parameter.');
+        }
+
         $curl = curl_init();
+
+        if (false === isset($curl) || true === empty($curl)) {
+            throw new \Bitpay\Client\ConnectionException('[ERROR] In CurlAdapter::sendRequest(): Could not initialize curl.');
+        }
 
         $default_curl_options = $this->getCurlDefaultOptions($request);
 
         foreach ($this->getCurlOptions() as $curl_option_key => $curl_option_value) {
-            if (!is_null($curl_option_value)) {
+            if (false === is_null($curl_option_value)) {
                 $default_curl_options[$curl_option_key] = $curl_option_value;
             }
         }
@@ -74,11 +88,17 @@ class CurlAdapter implements AdapterInterface
         if (false === $raw) {
             $errorMessage = curl_error($curl);
             curl_close($curl);
-            throw new \Bitpay\Client\ConnectionException($errorMessage);
+            throw new \Bitpay\Client\ConnectionException('[ERROR] In CurlAdapter::sendRequest(): ' . $errorMessage);
         }
 
         /** @var ResponseInterface */
         $response = Response::createFromRawResponse($raw);
+
+        if (false === isset($response) || true === empty($response)) {
+            throw new \Bitpay\Client\ConnectionException('[ERROR] In CurlAdapter::sendRequest(): Could not create response object from raw curl data.');
+        }
+
+        $this->lastTransferStats = curl_getinfo($curl);
 
         curl_close($curl);
 
@@ -93,13 +113,17 @@ class CurlAdapter implements AdapterInterface
      */
     private function getCurlDefaultOptions(RequestInterface $request)
     {
+        if (false === isset($request) || true === empty($request)) {
+            throw new \Bitpay\Client\ConnectionException('[ERROR] In CurlAdapter::getCurlDefaultOptions(): Missing or invalid $request parameter.');
+        }
+
         return array(
             CURLOPT_URL            => $request->getUri(),
             CURLOPT_PORT           => $request->getPort(),
             CURLOPT_CUSTOMREQUEST  => $request->getMethod(),
             CURLOPT_HTTPHEADER     => $request->getHeaderFields(),
             CURLOPT_TIMEOUT        => 10,
-            CURLOPT_SSL_VERIFYPEER => 1,
+            CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_SSL_VERIFYHOST => 2,
             CURLOPT_CAINFO         => __DIR__.'/ca-bundle.crt',
             CURLOPT_RETURNTRANSFER => true,
