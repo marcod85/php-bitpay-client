@@ -29,6 +29,11 @@ interface AccessTokenInterface
     public function getLabel();
 
     /**
+     * @return int
+     */
+    public function getCount();
+
+    /**
      * @return boolean
      */
     public function isNonceDisabled();
