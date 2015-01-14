@@ -22,7 +22,9 @@ class Autoloader
      */
     public static function register($prepend = true)
     {
-        spl_autoload_register(array(__CLASS__, 'autoload'), true, (bool) $prepend);
+        if (false === spl_autoload_register(array(__CLASS__, 'autoload'), true, (bool) $prepend)) {
+            throw new \Exception('[ERROR] In Autoloader::register(): System call to register autoloader failed.');
+        }
     }
 
     /**
@@ -30,7 +32,9 @@ class Autoloader
      */
     public static function unregister()
     {
-        spl_autoload_unregister(array(__CLASS__, 'autoload'));
+        if (false === spl_autoload_unregister(array(__CLASS__, 'autoload'))) {
+            throw new \Exception('[ERROR] In Autoloader::unregister(): System call to unregister autoloader failed.');
+        }
     }
 
     /**
@@ -41,14 +45,18 @@ class Autoloader
      */
     public static function autoload($class)
     {
+        if (false === isset($class) || true === empty($class)) {
+            throw new \Exception('[ERROR] In Autoloader::autoload(): Missing or invalid $class parameter.');
+        }
+
         $isBitpay = false;
-        $upLevl = DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
+        $upLevl   = DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
 
         if (0 === strpos($class, 'Bitpay\\')) {
             $isBitpay = true;
         }
 
-        $file = __DIR__ . $upLevl . str_replace('\\', DIRECTORY_SEPARATOR, $class).'.php';
+        $file = __DIR__ . $upLevl . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
 
         if (true === is_file($file) && true === is_readable($file)) {
             require_once $file;
@@ -57,10 +65,10 @@ class Autoloader
         }
 
         /**
-         * Only want to throw exceptions if class is under bitpay namespace
+         * Only want to throw exceptions if class is under Bitpay namespace
          */
         if ($isBitpay) {
-            throw new \Exception(sprintf('Class "%s" Not Found', $class));
+            throw new \Exception('[ERROR] In Autoloader::autoload(): Class "' . $class . '" not found or class file is unreadable.');
         }
     }
 }
