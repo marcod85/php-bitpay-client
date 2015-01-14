@@ -27,11 +27,17 @@ class AccessToken implements AccessTokenInterface
     protected $label;
 
     /**
+     * @var int
+     */
+    protected $count;
+
+    /**
      * @var boolean
      */
     protected $useNonce;
 
     /**
+     * Public constructor to initialize nonce usage parameter.
      */
     public function __construct()
     {
@@ -48,9 +54,9 @@ class AccessToken implements AccessTokenInterface
      */
     public function setId($id)
     {
-        if (false === empty($id)     &&
-            true  === is_string($id) &&
-            true  === ctype_print($id))
+        if (true  === isset($id)     &&
+            false === empty($id)     &&
+            true  === is_string($id))
         {
             $this->id = trim($id);
         }
@@ -73,9 +79,9 @@ class AccessToken implements AccessTokenInterface
      */
     public function setEmail($email)
     {
-        if (false === empty($email)     &&
-            true  === is_string($email) &&
-            true  === ctype_print($email))
+        if (true  === isset($email)     &&
+            false === empty($email)     &&
+            true  === is_string($email))
         {
             $this->email = trim($email);
         }
@@ -98,9 +104,9 @@ class AccessToken implements AccessTokenInterface
      */
     public function setLabel($label)
     {
-        if (false === empty($label)     &&
-            true  === is_string($label) &&
-            true  === ctype_print($label))
+        if (true  === isset($label)     &&
+            false === empty($label)     &&
+            true  === is_string($label))
         {
             $this->label = trim($label);
         }
@@ -114,6 +120,14 @@ class AccessToken implements AccessTokenInterface
     public function getLabel()
     {
         return $this->label;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCount()
+    {
+        return $this->count;
     }
 
     /**
