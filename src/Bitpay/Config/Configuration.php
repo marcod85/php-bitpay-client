@@ -76,7 +76,7 @@ class Configuration implements ConfigurationInterface
             ->info('Class that is used to store your keys')
             ->defaultValue('Bitpay\Storage\EncryptedFilesystemStorage')
             ->validate()
-                ->ifTrue()
+                ->ifString()
                 ->then(function ($value) {
                     if (false === class_exists($value)) {
                         throw new \Exception(sprintf('Could not find class "%s".', $value));
