@@ -61,7 +61,9 @@ class Item implements ItemInterface
      */
     public function setCode($code)
     {
-        $this->code = $code;
+        if (true === isset($code) && false === empty($code)) {
+            $this->code = $code;
+        }
 
         return $this;
     }
@@ -81,7 +83,9 @@ class Item implements ItemInterface
      */
     public function setDescription($description)
     {
-        $this->description = $description;
+        if (true === isset($description) && false === empty($description)) {
+            $this->description = $description;
+        }
 
         return $this;
     }
@@ -101,7 +105,7 @@ class Item implements ItemInterface
      */
     public function setPrice($price)
     {
-        if (1 !== preg_match('/^[0-9]+(?:\.[0-9]{1,2})?$/', $price)) {
+        if (true === isset($price) && 1 !== preg_match('/^[0-9]+(?:\.[0-9]{1,2})?$/', $price)) {
             throw new \Bitpay\Client\ArgumentException("Price must be formatted as a float");
         }
         $this->price = $price;
@@ -124,7 +128,9 @@ class Item implements ItemInterface
      */
     public function setQuantity($quantity)
     {
-        $this->quantity = $quantity;
+        if (true === isset($quantity) && false === empty($quantity)) {
+            $this->quantity = $quantity;
+        }
 
         return $this;
     }
@@ -144,7 +150,9 @@ class Item implements ItemInterface
      */
     public function setPhysical($physical)
     {
-        $this->physical = (boolean) $physical;
+        if (true === isset($physical) && true === is_bool($physical)) {
+            $this->physical = (boolean) $physical;
+        }
 
         return $this;
     }
