@@ -33,8 +33,13 @@ class Point implements PointInterface
      */
     public function __construct($x, $y)
     {
-        $this->x = (string) $x;
-        $this->y = (string) $y;
+        if (true === isset($x) && false === empty($x)) {
+            $this->x = (string) $x;
+        }
+
+        if (true === isset($y) && false === empty($y)) {
+            $this->y = (string) $y;
+        }
     }
 
     /**
