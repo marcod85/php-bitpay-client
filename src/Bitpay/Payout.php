@@ -107,7 +107,7 @@ class Payout implements PayoutInterface
      */
     public function setId($id)
     {
-        if (!empty($id) && ctype_print($id)) {
+        if (true === isset($id) && false === empty($id)) {
             $this->id = trim($id);
         }
 
@@ -130,7 +130,7 @@ class Payout implements PayoutInterface
      */
     public function setAccountId($id)
     {
-        if (!empty($id) && ctype_print($id)) {
+        if (true === isset($id) && false === empty($id)) {
             $this->account_id = $id;
         }
 
@@ -152,7 +152,7 @@ class Payout implements PayoutInterface
      */
     public function setAmount($amount)
     {
-        if (!empty($amount)) {
+        if (true === isset($amount) && false === empty($amount)) {
             $this->amount = $amount;
         }
 
@@ -174,7 +174,7 @@ class Payout implements PayoutInterface
      */
     public function setCurrency(CurrencyInterface $currency)
     {
-        if (!empty($currency)) {
+        if (true === isset($currency) && false === empty($currency)) {
             $this->currency = $currency;
         }
 
@@ -196,7 +196,7 @@ class Payout implements PayoutInterface
      */
     public function setEffectiveDate($effectiveDate)
     {
-        if (!empty($effectiveDate)) {
+        if (true === isset($effectiveDate) && false === empty($effectiveDate)) {
             $this->effectiveDate = $effectiveDate;
         }
 
@@ -218,7 +218,7 @@ class Payout implements PayoutInterface
      */
     public function setRate($rate)
     {
-        if (!empty($rate)) {
+        if (true === isset($rate) && false === empty($rate)) {
             $this->rate = $rate;
         }
 
@@ -260,7 +260,7 @@ class Payout implements PayoutInterface
      */
     public function setRequestDate($requestDate)
     {
-        if (!empty($requestDate)) {
+        if (true === isset($requestDate) && false === empty($requestDate)) {
             $this->requestDate = $requestDate;
         }
 
@@ -283,7 +283,7 @@ class Payout implements PayoutInterface
      */
     public function addInstruction(PayoutInstructionInterface $instruction)
     {
-        if (!empty($instruction)) {
+        if (true === isset($instruction) && false === empty($instruction)) {
             $this->instructions[] = $instruction;
         }
 
@@ -301,7 +301,7 @@ class Payout implements PayoutInterface
      */
     public function updateInstruction($index, $function, $argument)
     {
-        if (!empty($argument) && ctype_print($argument)) {
+        iif (true === isset($index) && true === isset($function)) {
             $this->instructions[$index]->$function($argument);
         }
 
@@ -323,7 +323,7 @@ class Payout implements PayoutInterface
      */
     public function setStatus($status)
     {
-        if (!empty($status) && ctype_print($status)) {
+        if (true === isset($status) && false === empty($status)) {
             $this->status = trim($status);
         }
 
@@ -345,7 +345,7 @@ class Payout implements PayoutInterface
      */
     public function setToken(TokenInterface $token)
     {
-        if (!empty($token)) {
+        if (true === isset($token) && false === empty($token)) {
             $this->token = $token;
         }
         return $this;
@@ -367,7 +367,7 @@ class Payout implements PayoutInterface
      */
     public function setResponseToken($responseToken)
     {
-        if (!empty($responseToken)) {
+        if (true === isset($responseToken) && false === empty($responseToken)) {
             $this->responseToken = trim($responseToken);
         }
         return $this;
@@ -388,7 +388,7 @@ class Payout implements PayoutInterface
      */
     public function setPricingMethod($pricingMethod)
     {
-        if (!empty($pricingMethod) && ctype_print($pricingMethod)) {
+        if (true === isset($pricingMethod) && false === empty($pricingMethod)) {
             $this->pricingMethod = trim($pricingMethod);
         }
 
@@ -411,7 +411,7 @@ class Payout implements PayoutInterface
      */
     public function setReference($reference)
     {
-        if (!empty($reference) && ctype_print($reference)) {
+        if (true === isset($reference) && false === empty($reference)) {
             $this->reference = trim($reference);
         }
 
@@ -434,7 +434,7 @@ class Payout implements PayoutInterface
      */
     public function setNotificationEmail($notificationEmail)
     {
-        if (!empty($notificationEmail) && ctype_print($notificationEmail)) {
+        if (true === isset($notificationEmail) && false === empty($notificationEmail)) {
             $this->notificationEmail = trim($notificationEmail);
         }
 
@@ -457,7 +457,7 @@ class Payout implements PayoutInterface
      */
     public function setNotificationUrl($notificationUrl)
     {
-        if (!empty($notificationUrl) && ctype_print($notificationUrl)) {
+        if (true === isset($notificationUrl) && false === empty($notificationUrl)) {
             $this->notificationUrl = trim($notificationUrl);
         }
 
