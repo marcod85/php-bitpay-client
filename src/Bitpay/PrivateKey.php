@@ -47,6 +47,11 @@ class PrivateKey extends Key
     {
         if (null === $this->publicKey) {
             $this->publicKey = new PublicKey();
+            
+            if (false === isset($this->publicKey) || true === empty($this->publicKey)) {
+                throw new \Exception('[ERROR] In PrivateKey::getPublicKey: Could not instantiate new PublicKey object.');
+            }
+
             $this->publicKey->setPrivateKey($this);
             $this->publicKey->generate();
         }
@@ -61,16 +66,20 @@ class PrivateKey extends Key
      */
     public function generate()
     {
-        if (!empty($this->hex)) {
+        if (true === isset($this->hex) && false === empty($this->hex)) {
             return $this;
         }
 
         do {
             $privateKey = \Bitpay\Util\SecureRandom::generateRandom(32);
             $this->hex  = strtolower(bin2hex($privateKey));
-        } while (Math::cmp('0x'.$this->hex, '1') <= 0 || Math::cmp('0x'.$this->hex, '0x'.Secp256k1::N) >= 0);
+        } while (Math::cmp('0x' . $this->hex, '1') <= 0 || Math::cmp('0x' . $this->hex, '0x' . Secp256k1::N) >= 0);
 
         $this->dec = Util::decodeHex($this->hex);
+
+        if (Math::cmp($this->dec, '0') <= 0) {
+            throw new \Exception('[ERROR] In PrivateKey::generate(): Error decoding hex value. The decimal value returned was <= 0.');
+        }
 
         return $this;
     }
@@ -92,7 +101,7 @@ class PrivateKey extends Key
      */
     public function hasValidHex()
     {
-        return (!empty($this->hex) || ctype_xdigit($this->hex));
+        return (true === isset($this->hex) && false === empty($this->hex) && true === ctype_xdigit($this->hex));
     }
 
     /**
@@ -100,7 +109,7 @@ class PrivateKey extends Key
      */
     public function hasValidDec()
     {
-        return (!empty($this->dec) || ctype_digit($this->dec));
+        return (true === isset($this->dec) && false === empty($this->dec) && true === ctype_digit($this->dec));
     }
 
     /**
@@ -110,43 +119,62 @@ class PrivateKey extends Key
      */
     public function sign($data)
     {
-        if (!ctype_xdigit($this->hex)) {
-            throw new \Exception('The private key must be in hex format.');
+        if (true === isset($this->hex) && false === ctype_xdigit($this->hex)) {
+            throw new \Exception('[ERROR] In PrivateKey:sign(): The private key must be in hex format.');
         }
 
-        if (empty($data)) {
-            throw new \Exception('You did not provide any data to sign.');
+        if (false === isset($data) || true === empty($data)) {
+            throw new \Exception('[ERROR] In PrivateKey:sign(): You did not provide any data to sign.');
         }
 
         $e = Util::decodeHex(hash('sha256', $data));
 
+        if (Math::cmp($e, '0') <= 0) {
+            throw new \Exception('[ERROR] In PrivateKey::sign(): Error decoding hex value. The decimal value returned was <= 0.');
+        }
+
         do {
-            if (substr(strtolower($this->hex), 0, 2) != '0x') {
-                $d = '0x'.$this->hex;
+            if (substr(strtolower(trim($this->hex)), 0, 2) != '0x') {
+                $d = '0x' . $this->hex;
             } else {
                 $d = $this->hex;
             }
 
             $k = SecureRandom::generateRandom(32);
 
-            $k_hex = '0x'.strtolower(bin2hex($k));
-            $n_hex = '0x'.Secp256k1::N;
+            if (false === isset($k) || true === empty($k)) {
+                throw new \Exception('[ERROR] In PrivateKey:sign(): Failed to generate a secure random value.');
+            }
 
+            $k_hex = '0x' . strtolower(bin2hex($k));
+            $n_hex = '0x' . Secp256k1::N;
 
-            $Gx = '0x'.substr(Secp256k1::G, 2, 64);
-            $Gy = '0x'.substr(Secp256k1::G, 66, 64);
+            $Gx = '0x' . substr(Secp256k1::G, 2, 64);
+            $Gy = '0x' . substr(Secp256k1::G, 66, 64);
 
             $P = new Point($Gx, $Gy);
+
+            if (false === isset($P) || true === empty($P)) {
+                throw new \Exception('[ERROR] In PrivateKey:sign(): Failed to create a new Point object.');
+            }
 
             // Calculate a new curve point from Q=k*G (x1,y1)
             $R = Util::doubleAndAdd($k_hex, $P);
 
+            if (false === isset($R) || true === empty($R)) {
+                throw new \Exception('[ERROR] In PrivateKey:sign(): Failed to calculate a new curve point.');
+            }
+
             $Rx_hex = Util::encodeHex($R->getX());
+
+            if (Math::cmp($Rx_hex, '0') <= 0) {
+                throw new \Exception('[ERROR] In PrivateKey::sign(): Error encoding decimal value. The hex value returned was <= 0.');
+            }
 
             $Rx_hex = str_pad($Rx_hex, 64, '0', STR_PAD_LEFT);
 
             // r = x1 mod n
-            $r = Math::mod('0x'.$Rx_hex, $n_hex);
+            $r = Math::mod('0x' . $Rx_hex, $n_hex);
 
             // s = k^-1 * (e+d*r) mod n
             $edr  = Math::add($e, Math::mul($d, $r));
@@ -184,6 +212,14 @@ class PrivateKey extends Key
      */
     public static function serializeSig($r, $s)
     {
+        if (false === isset($r) || true === empty($r) {
+            throw new \Exception('[ERROR] In PrivateKey:serializeSig(): Missing or invalid r component.');
+        }
+
+        if (false === isset($s) || true === empty($s) {
+            throw new \Exception('[ERROR] In PrivateKey:serializeSig(): Missing or invalid s component.');
+        }
+
         $dec  = '';
         $byte = '';
         $seq  = '';
@@ -197,44 +233,55 @@ class PrivateKey extends Key
 
         $dec = Util::decodeHex($r);
 
+        if (Math::cmp($e, '0') <= 0) {
+            throw new \Exception('[ERROR] In PrivateKey::serializeSig(): Error decoding hex value. The decimal value returned was <= 0.');
+        }
+
         while (Math::cmp($dec, '0') > 0) {
-            $dv = Math::div($dec, '256');
-            $rem = Math::mod($dec, '256');
-            $dec = $dv;
-            $byte = $byte.$digits[$rem];
+            $dv   = Math::div($dec, '256');
+            $rem  = Math::mod($dec, '256');
+            $dec  = $dv;
+            $byte = $byte . $digits[$rem];
         }
 
         $byte = strrev($byte);
 
         // msb check
-        if (Math::cmp('0x'.bin2hex($byte[0]), '0x80') >= 0) {
-            $byte = chr(0x00).$byte;
+        if (Math::cmp('0x' . bin2hex($byte[0]), '0x80') >= 0) {
+            $byte = chr(0x00) . $byte;
         }
 
         $retval['bin_r'] = bin2hex($byte);
-        $seq = chr(0x02).chr(strlen($byte)).$byte;
+
+        $seq = chr(0x02) . chr(strlen($byte)) . $byte;
         $dec = Util::decodeHex($s);
 
         $byte = '';
 
         while (Math::cmp($dec, '0') > 0) {
-            $dv = Math::div($dec, '256');
-            $rem = Math::mod($dec, '256');
-            $dec = $dv;
-            $byte = $byte.$digits[$rem];
+            $dv   = Math::div($dec, '256');
+            $rem  = Math::mod($dec, '256');
+            $dec  = $dv;
+            $byte = $byte . $digits[$rem];
         }
 
         $byte = strrev($byte);
 
         // msb check
-        if (Math::cmp('0x'.bin2hex($byte[0]), '0x80') >= 0) {
-            $byte = chr(0x00).$byte;
+        if (Math::cmp('0x' . bin2hex($byte[0]), '0x80') >= 0) {
+            $byte = chr(0x00) . $byte;
         }
 
         $retval['bin_s'] = bin2hex($byte);
-        $seq = $seq.chr(0x02).chr(strlen($byte)).$byte;
-        $seq = chr(0x30).chr(strlen($seq)).$seq;
+
+        $seq = $seq . chr(0x02) . chr(strlen($byte)) . $byte;
+        $seq = chr(0x30) . chr(strlen($seq)) . $seq;
+
         $retval['seq'] = bin2hex($seq);
+
+        if (false === isset($retval['seq']) || true === empty($retval['seq'])) {
+            throw new \Exception('[ERROR] In PrivateKey:serializeSig(): Failed to serialize the signature coordinates.');
+        }
 
         return $retval;
     }
@@ -247,6 +294,10 @@ class PrivateKey extends Key
      */
     public function pemDecode($pem_data)
     {
+        if (false === isset($pem_data) || true === empty($pem_data) {
+            throw new \Exception('[ERROR] In PrivateKey:pemDecode(): Missing or invalid pem_data parameter.');
+        }
+
         $beg_ec_text = '-----BEGIN EC PRIVATE KEY-----';
         $end_ec_text = '-----END EC PRIVATE KEY-----';
 
@@ -263,7 +314,7 @@ class PrivateKey extends Key
         $decoded = bin2hex(base64_decode($pem_data));
 
         if (strlen($decoded) < 230) {
-            throw new \Exception('Invalid or corrupt secp256k1 key provided. Cannot decode the supplied PEM data.');
+            throw new \Exception('[ERROR] In PrivateKey:pemDecode(): Invalid or corrupt secp256k1 key provided. Cannot decode the supplied PEM data.');
         }
 
         $ecpemstruct = array(
@@ -273,14 +324,14 @@ class PrivateKey extends Key
         );
 
         if ($ecpemstruct['obj_id_val'] != '2b8104000a') {
-            throw new \Exception('Invalid or corrupt secp256k1 key provided. Cannot decode the supplied PEM data.');
+            throw new \Exception('[ERROR] In PrivateKey:pemDecode(): Invalid or corrupt secp256k1 key provided. Cannot decode the supplied PEM data.');
         }
 
         $private_key = $ecpemstruct['oct_sec_val'];
         $public_key  = $ecpemstruct['bit_str_val'];
 
         if (strlen($private_key) < 64 || strlen($public_key) < 128) {
-            throw new \Exception('Invalid or corrupt secp256k1 key provided. Cannot decode the supplied PEM data.');
+            throw new \Exception('[ERROR] In PrivateKey:pemDecode(): Invalid or corrupt secp256k1 key provided. Cannot decode the supplied PEM data.');
         }
 
         $this->pemDecoded = array('private_key' => $private_key, 'public_key' => $public_key);
@@ -296,8 +347,8 @@ class PrivateKey extends Key
      */
     public function pemEncode($keypair)
     {
-        if (is_array($keypair) && (strlen($keypair[0]) < 64 || strlen($keypair[1]) < 128)) {
-            throw new \Exception('Invalid or corrupt secp256k1 keypair provided. Cannot decode the supplied PEM data.');
+        if (false === isset($keypair) || (true === is_array($keypair) && (strlen($keypair[0]) < 64) || strlen($keypair[1]) < 128)) {
+            throw new \Exception('[ERROR] In PrivateKey:pemEncode(): Invalid or corrupt secp256k1 keypair provided. Cannot decode the supplied PEM data.');
         }
 
         $dec         = '';
@@ -338,19 +389,23 @@ class PrivateKey extends Key
         $dec = trim(implode($ecpemstruct));
 
         if (strlen($dec) < 230) {
-            throw new \Exception('Invalid or corrupt secp256k1 keypair provided. Cannot encode the supplied data.');
+            throw new \Exception('[ERROR] In PrivateKey:pemEncode(): Invalid or corrupt secp256k1 keypair provided. Cannot encode the supplied data.');
         }
 
         $dec = Util::decodeHex('0x'.$dec);
 
-        while (Math::cmp($dec, '0') > 0) {
-            $dv = Math::div($dec, '256');
-            $rem = Math::mod($dec, '256');
-            $dec = $dv;
-            $byte = $byte.$digits[$rem];
+        if (Math::cmp($dec, '0') <= 0) {
+            throw new \Exception('[ERROR] In PrivateKey::pemEncode(): Error decoding hex value. The decimal value returned was <= 0.');
         }
 
-        $byte = $beg_ec_text."\r\n".chunk_split(base64_encode(strrev($byte)), 64).$end_ec_text;
+        while (Math::cmp($dec, '0') > 0) {
+            $dv   = Math::div($dec, '256');
+            $rem  = Math::mod($dec, '256');
+            $dec  = $dv;
+            $byte = $byte . $digits[$rem];
+        }
+
+        $byte = $beg_ec_text . "\r\n" . chunk_split(base64_encode(strrev($byte)), 64) . $end_ec_text;
 
         $this->pemEncoded = $byte;
 
