@@ -135,7 +135,7 @@ class Invoice implements InvoiceInterface
      */
     public function setPrice($price)
     {
-        if (!empty($price)) {
+        if (true === isset($price) && false === empty($price)) {
             $this->getItem()->setPrice($price);
         }
 
@@ -157,7 +157,7 @@ class Invoice implements InvoiceInterface
      */
     public function setCurrency(CurrencyInterface $currency)
     {
-        if (!empty($currency)) {
+        if (true === isset($currency) && false === empty($currency)) {
             $this->currency = $currency;
         }
 
@@ -186,7 +186,7 @@ class Invoice implements InvoiceInterface
      */
     public function setItem(ItemInterface $item)
     {
-        if (!empty($item)) {
+        if (true === isset($item) && false === empty($item)) {
             $this->item = $item;
         }
 
@@ -213,7 +213,7 @@ class Invoice implements InvoiceInterface
      */
     public function setBuyer(BuyerInterface $buyer)
     {
-        if (!empty($buyer)) {
+        if (true === isset($buyer) && false === empty($buyer)) {
             $this->buyer = $buyer;
         }
 
@@ -235,7 +235,7 @@ class Invoice implements InvoiceInterface
      */
     public function setTransactionSpeed($transactionSpeed)
     {
-        if (!empty($transactionSpeed) && ctype_print($transactionSpeed)) {
+        if (true === isset($transactionSpeed) && false === empty($transactionSpeed)) {
             $this->transactionSpeed = trim($transactionSpeed);
         }
 
@@ -257,7 +257,7 @@ class Invoice implements InvoiceInterface
      */
     public function setNotificationEmail($notificationEmail)
     {
-        if (!empty($notificationEmail) && ctype_print($notificationEmail)) {
+        if (true === isset($notificationEmail) && false === empty($notificationEmail)) {
             $this->notificationEmail = trim($notificationEmail);
         }
 
@@ -279,7 +279,7 @@ class Invoice implements InvoiceInterface
      */
     public function setNotificationUrl($notificationUrl)
     {
-        if (!empty($notificationUrl) && ctype_print($notificationUrl)) {
+        if (true === isset($notificationUrl) && false === empty($notificationUrl)) {
             $this->notificationUrl = trim($notificationUrl);
         }
 
@@ -301,7 +301,7 @@ class Invoice implements InvoiceInterface
      */
     public function setRedirectUrl($redirectUrl)
     {
-        if (!empty($redirectUrl) && ctype_print($redirectUrl)) {
+        if (true === isset($redirectUrl) && false === empty($redirectUrl)) {
             $this->redirectUrl = trim($redirectUrl);
         }
 
@@ -323,7 +323,7 @@ class Invoice implements InvoiceInterface
      */
     public function setPosData($posData)
     {
-        if (!empty($posData)) {
+        if (true === isset($posData) && false === empty($posData)) {
             $this->posData = $posData;
         }
 
@@ -345,7 +345,7 @@ class Invoice implements InvoiceInterface
      */
     public function setStatus($status)
     {
-        if (!empty($status) && ctype_print($status)) {
+        if (true === isset($status) && false === empty($status)) {
             $this->status = trim($status);
         }
 
@@ -382,7 +382,7 @@ class Invoice implements InvoiceInterface
      */
     public function setId($id)
     {
-        if (!empty($id) && ctype_print($id)) {
+        if (true === isset($id) && false === empty($id)) {
             $this->id = trim($id);
         }
 
@@ -404,7 +404,7 @@ class Invoice implements InvoiceInterface
      */
     public function setUrl($url)
     {
-        if (!empty($url) && ctype_print($url)) {
+        if (true === isset($url) && false === empty($url)) {
             $this->url = trim($url);
         }
 
@@ -426,7 +426,7 @@ class Invoice implements InvoiceInterface
      */
     public function setBtcPrice($btcPrice)
     {
-        if (!empty($btcPrice)) {
+        if (true === isset($btcPrice) && false === empty($btcPrice)) {
             $this->btcPrice = $btcPrice;
         }
 
@@ -448,7 +448,7 @@ class Invoice implements InvoiceInterface
      */
     public function setInvoiceTime($invoiceTime)
     {
-        if (!empty($invoiceTime)) {
+        if (true === isset($invoiceTime) && false === empty($invoiceTime)) {
             $this->invoiceTime = $invoiceTime;
         }
 
@@ -470,7 +470,7 @@ class Invoice implements InvoiceInterface
      */
     public function setExpirationTime($expirationTime)
     {
-        if (!empty($expirationTime)) {
+        if (true === isset($expirationTime) && false === empty($expirationTime)) {
             $this->expirationTime = $expirationTime;
         }
 
@@ -492,7 +492,7 @@ class Invoice implements InvoiceInterface
      */
     public function setCurrentTime($currentTime)
     {
-        if (!empty($currentTime)) {
+        if (true === isset($currentTime) && false === empty($currentTime)) {
             $this->currentTime = $currentTime;
         }
 
@@ -514,7 +514,7 @@ class Invoice implements InvoiceInterface
      */
     public function setOrderId($orderId)
     {
-        if (!empty($orderId) && ctype_print($orderId)) {
+        if (true === isset($orderId) && false === empty($orderId)) {
             $this->orderId = trim($orderId);
         }
 
@@ -639,7 +639,7 @@ class Invoice implements InvoiceInterface
      */
     public function setExceptionStatus($exceptionStatus)
     {
-        if (is_bool($exceptionStatus)) {
+        if (true === isset($orderId) && true === is_bool($orderId)) {
             $this->exceptionStatus = $exceptionStatus;
         }
 
@@ -661,7 +661,7 @@ class Invoice implements InvoiceInterface
      */
     public function setBtcPaid($btcPaid)
     {
-        if (isset($btcPaid)) {
+        if (true === isset($btcPaid) && false === empty($btcPaid)) {
             $this->btcPaid = $btcPaid;
         }
 
@@ -683,7 +683,7 @@ class Invoice implements InvoiceInterface
      */
     public function setRate($rate)
     {
-        if (!empty($rate)) {
+        if (true === isset($rate) && false === empty($rate)) {
             $this->rate = $rate;
         }
 
