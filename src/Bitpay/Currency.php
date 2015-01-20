@@ -90,7 +90,7 @@ class Currency implements CurrencyInterface
      */
     public function __construct($code = null)
     {
-        if (null !== $code) {
+        if (false === empty($code)) {
             $this->setCode($code);
         }
 
@@ -115,10 +115,8 @@ class Currency implements CurrencyInterface
      */
     public function setCode($code)
     {
-        if (null !== $code && !in_array(strtoupper($code), self::$availableCurrencies)) {
-            throw new \Bitpay\Client\ArgumentException(
-                sprintf('The currency code "%s" is not supported.', $code)
-            );
+        if (false === isset($code) || false === in_array(strtoupper($code), self::$availableCurrencies)) {
+            throw new \Exception(sprintf('[ERROR] In Currency::setCode(): The currency code "%s" is not supported.', $code));
         }
 
         $this->code = strtoupper($code);
@@ -141,7 +139,7 @@ class Currency implements CurrencyInterface
      */
     public function setSymbol($symbol)
     {
-        if (!empty($symbol) && ctype_print($symbol)) {
+        if (true === isset($symbol) && true === ctype_print($symbol)) {
             $this->symbol = trim($symbol);
         }
 
@@ -163,7 +161,7 @@ class Currency implements CurrencyInterface
      */
     public function setPrecision($precision)
     {
-        if (!empty($precision) && ctype_digit(strval($precision))) {
+        if (true === isset($precision) && true === ctype_digit(strval($precision))) {
             $this->precision = (int) $precision;
         }
 
@@ -185,7 +183,7 @@ class Currency implements CurrencyInterface
      */
     public function setExchangePctFee($fee)
     {
-        if (!empty($fee) && ctype_print($fee)) {
+        if (true === isset($fee) && true === ctype_print($fee)) {
             $this->exchangePercentageFee = trim($fee);
         }
 
@@ -227,7 +225,7 @@ class Currency implements CurrencyInterface
      */
     public function setName($name)
     {
-        if (!empty($name) && ctype_print($name)) {
+        if (true === isset($name) && true === ctype_print($name)) {
             $this->name = trim($name);
         }
 
@@ -249,7 +247,7 @@ class Currency implements CurrencyInterface
      */
     public function setPluralName($pluralName)
     {
-        if (!empty($pluralName) && ctype_print($pluralName)) {
+        if (true === isset($pluralName) && true === ctype_print($pluralName)) {
             $this->pluralName = trim($pluralName);
         }
 
@@ -271,7 +269,9 @@ class Currency implements CurrencyInterface
      */
     public function setAlts($alts)
     {
-        $this->alts = $alts;
+        if (true === isset($alts) && false === empty($alts)) {
+            $this->alts = $alts;
+        }
 
         return $this;
     }
@@ -291,7 +291,9 @@ class Currency implements CurrencyInterface
      */
     public function setPayoutFields(array $payoutFields)
     {
-        $this->payoutFields = $payoutFields;
+        if (true === isset($payoutFields) && false === empty($payoutFields)) {
+            $this->payoutFields = $payoutFields;
+        }
 
         return $this;
     }
