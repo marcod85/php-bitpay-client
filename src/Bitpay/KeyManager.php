@@ -9,7 +9,7 @@ namespace Bitpay;
 /**
  * Used to manage keys
  *
- * @package Bitcore
+ * @package Bitpay
  */
 class KeyManager
 {
@@ -23,7 +23,11 @@ class KeyManager
      */
     public function __construct(\Bitpay\Storage\StorageInterface $storage)
     {
-        $this->storage = $storage;
+        if (true === isset($storage) && false === empty($storage)) {
+            $this->storage = $storage;
+        } else {
+            throw new \Exception('[ERROR] In KeyManager::__construct(): Missing or invalid $storage parameter.');
+        }
     }
 
     /**
@@ -31,7 +35,11 @@ class KeyManager
      */
     public function persist(KeyInterface $key)
     {
-        $this->storage->persist($key);
+        if (true === isset($key) && false === empty($key)) {
+            $this->storage->persist($key);
+        } else {
+            throw new \Exception('[ERROR] In KeyManager::persist(): Missing or invalid $key parameter.');
+        }
     }
 
     /**
@@ -39,6 +47,10 @@ class KeyManager
      */
     public function load($id)
     {
-        return $this->storage->load($id);
+        if (true === isset($id) && false === empty($id)) {
+            return $this->storage->load($id);
+        } else {
+            throw new \Exception('[ERROR] In KeyManager::load(): Missing or invalid $id parameter.');
+        }
     }
 }
