@@ -42,7 +42,7 @@ class PayoutTransaction implements PayoutTransactionInterface
      */
     public function setTransactionId($txid)
     {
-        if (!empty($txid)) {
+        if (true === isset($txid) && false === empty($txid)) {
             $this->txid = $txid;
         }
 
@@ -64,7 +64,7 @@ class PayoutTransaction implements PayoutTransactionInterface
      */
     public function setAmount($amount)
     {
-        if (!empty($amount)) {
+        if (true === isset($amount) && false === empty($amount)) {
             $this->amount = $amount;
         }
 
@@ -86,7 +86,7 @@ class PayoutTransaction implements PayoutTransactionInterface
      */
     public function setDate($date)
     {
-        if (!empty($date)) {
+        if (true === isset($date) && false === empty($date)) {
             $this->date = $date;
         }
 
