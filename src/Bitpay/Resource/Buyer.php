@@ -5,31 +5,20 @@
  * @copyright  Copyright 2011-2014 BitPay, Inc.
  * @author     Integrations Development Team <integrations@bitpay.com>
  * @license    https://raw.githubusercontent.com/bitpay/php-bitpay-client/master/LICENSE The MIT License (MIT)
- * @link       https://github.com/bitpay/php-bitpay-client
+ * @see        https://github.com/bitpay/php-bitpay-client
  * @package    Bitpay
  * @since      2.0.0
- * @version    2.3.0
+ * @version    2.2.2
  * @filesource
  */
 
-namespace Bitpay\Storage;
-
-use \Bitpay\Crypto\Key;
+namespace Bitpay\Resource;
 
 /**
- * Only used for testing.
+ * Semantics...
  *
- * @codeCoverageIgnore
  * @package Bitpay
  */
-class MockStorage implements Storage
+class Buyer extends User
 {
-    public function persist(Key $key)
-    {
-    }
-
-    public function load($id)
-    {
-        return;
-    }
 }

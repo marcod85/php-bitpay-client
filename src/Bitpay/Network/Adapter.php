@@ -12,24 +12,21 @@
  * @filesource
  */
 
-namespace Bitpay\Storage;
+namespace Bitpay\Network;
 
-use \Bitpay\Crypto\Key;
+use Bitpay\Network\Request;
 
 /**
- * Only used for testing.
- *
- * @codeCoverageIgnore
- * @package Bitpay
+ * A client can be configured to use a specific adapter to make requests, by
+ * default the CurlAdapter is what is used.
  */
-class MockStorage implements Storage
+interface Adapter
 {
-    public function persist(Key $key)
-    {
-    }
-
-    public function load($id)
-    {
-        return;
-    }
+    /**
+     * Sends a request to BitPay
+     *
+     * @param  Request
+     * @return Response
+     */
+    public function sendRequest(Request $request);
 }

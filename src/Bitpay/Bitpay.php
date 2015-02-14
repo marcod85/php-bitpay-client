@@ -1,162 +1,115 @@
 <?php
 /**
- * @license Copyright 2011-2014 BitPay Inc., MIT License 
- * see https://github.com/bitpay/php-bitpay-client/blob/master/LICENSE
+ * PHP Client Library for the new cryptographically secure BitPay API.
+ *
+ * @copyright  Copyright 2011-2014 BitPay, Inc.
+ * @author     Integrations Development Team <integrations@bitpay.com>
+ * @license    https://raw.githubusercontent.com/bitpay/php-bitpay-client/master/LICENSE The MIT License (MIT)
+ * @see        https://github.com/bitpay/php-bitpay-client
+ * @package    Bitpay
+ * @since      2.0.0
+ * @version    2.2.2
+ * @filesource
  */
 
 namespace Bitpay;
 
-use Bitpay\DependencyInjection\BitpayExtension;
-use Bitpay\DependencyInjection\Loader\ArrayLoader;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Component\Config\Loader\LoaderResolver;
-use Symfony\Component\Config\Loader\DelegatingLoader;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Bitpay\Resource\Client;
+use Bitpay\Resource\Application;
+use Bitpay\Resource\Bill;
+use Bitpay\Resource\Buyer;
 
 /**
- * Setups container and is ready for some dependency injection action
+ * Primary class for working with the bitpay.com payment gateway.
+ * Will return an instance of the Client class.
  *
- * @package Bitpay
+ * @link https://github.com/bitpay/php-bitpay-client/blob/master/src/Bitpay/Bitpay.php
  */
-class Bitpay
+final class Bitpay
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
+	const NAME    = 'BitPay PHP-Client';
+	const VERSION = '2.2.2';
 
-    /**
-     * First argument can either be a string or fullpath to a yaml file that
-     * contains configuration parameters. For a list of configuration values
-     * see \Bitpay\Config\Configuration class
-     *
-     * The second argument is the container if you want to build one by hand.
-     *
-     * @param array|string       $config
-     * @param ContainerInterface $container
-     */
-    public function __construct($config = array(), ContainerInterface $container = null)
+	private $client;
+    private $application;
+    private $bill;
+    private $buyer;
+    private $currency;
+    private $invoice;
+    private $item;
+    private $org;
+    private $payout;
+    private $token;
+    private $user;
+    private $debug;
+
+    public function __construct($config = array(), $debug = false)
     {
-        $this->container = $container;
-
-        if (true === is_null($container)) {
-            $this->initializeContainer($config);
-        }
+    	if (false === isset($this->client) || true === empty($this->client)) {
+    		$this->client = new Client($config);
+    	}
     }
 
-    /**
-     * Initialize the container
-     *
-     * @param mixed $config
-     */
-    protected function initializeContainer($config)
+    final public function getVersion()
     {
-        $this->container = $this->buildContainer($config);
-        
-        if (true === isset($this->container) && false === empty($this->container)) {
-            $this->container->compile();
-        } else {
-            throw new \Exception('[ERROR] In Bitpay::initializeContainer(): Could not initialize the container object.');
-        }
+    	return self::VERSION;
     }
 
-    /**
-     * Build the container of services and parameters
-     *
-     * @return object $container
-     */
-    protected function buildContainer($config)
+    final public function getName()
     {
-        $container = new ContainerBuilder(new ParameterBag($this->getParameters()));
-
-        if (true === isset($container) && false === empty($container)) {
-            $this->prepareContainer($container);
-            $this->getContainerLoader($container)->load($config);
-        } else {
-            throw new \Exception('[ERROR] In Bitpay::buildContainer(): Could not initialize the container object.');
-        }
-
-        return $container;
+    	return self::NAME;
     }
 
-    /**
-     * Returns the absolute root directory path for this project.
-     *
-     * @return array
-     */
-    protected function getParameters()
+    final public function getClient()
     {
-        return array('bitpay.root_dir' => realpath(__DIR__.'/..'),);
+    	return $this->client;
     }
 
-    /**
-     */
-    private function prepareContainer(ContainerInterface $container)
+    final public function newClient()
     {
-        if (true === isset($container) && false === empty($container)) {
-            foreach ($this->getDefaultExtensions() as $ext) {
-                $container->registerExtension($ext);
-                $container->loadFromExtension($ext->getAlias());
-            }
-        } else {
-            throw new \Exception('[ERROR] In Bitpay::prepareContainer(): Missing or invalid $container parameter.');
-        }
+    	return new Client();
     }
 
-    /**
-     * @param  ContainerInterface $container
-     * @return LoaderInterface
-     */
-    private function getContainerLoader(ContainerInterface $container)
+    final public function createClient()
     {
-        if (true === isset($container) && false === empty($container)) {
-            $locator  = new FileLocator();
-
-            $resolver = new LoaderResolver(
-                array(
-                    new ArrayLoader($container),
-                    new YamlFileLoader($container, $locator),
-                )
-            );
-
-            return new DelegatingLoader($resolver);
-
-        } else {
-            throw new \Exception('[ERROR] In Bitpay::getContainerLoader(): Missing or invalid $container parameter.');
-        }
+    	return $this->newClient();
     }
 
-    /**
-     * Returns an array of the default extensions
-     *
-     * @return array
-     */
-    private function getDefaultExtensions()
+    final public function createApplication()
     {
-        return array(new BitpayExtension(),);
+    	return new Application();
     }
 
-    /**
-     * @return ContainerInterface
-     */
-    public function getContainer()
+    final public function newApplication()
     {
-        return $this->container;
+    	return $this->createApplication();
     }
 
-    /**
-     * @return mixed
-     */
-    public function get($service)
+    final public function getApplication()
     {
-        if (true === isset($container) && false === empty($container)) {
-            return $this->container->get($service);
-        } else {
-            throw new \Exception('[ERROR] In Bitpay::get(): Could not get $service because the $container object is missing or invalid.');
-        }
+    	return $this->application;
     }
+
+    public function createBill()
+    {
+    	return new Bill();
+    }
+
+    public function getBill()
+    {
+    	return $this->bill;
+    }
+
+    public function createBuyer()
+    {
+    	return new Buyer();
+    }
+
+    public function getBuyer()
+    {
+        return $this->buyer;
+    }
+
+
+
 }
