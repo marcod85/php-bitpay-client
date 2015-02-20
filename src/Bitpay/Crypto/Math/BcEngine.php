@@ -23,7 +23,7 @@ final class BcEngine
 	const SCALE = 0;
 
     /**
-     * Public constructor method.
+     * Public constructor method to initialize important class properties.
      */
     public function __construct()
     {

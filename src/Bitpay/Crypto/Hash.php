@@ -26,7 +26,7 @@ trait Hash
      *
      * @return bool
      */
-    final public static function hasSupport()
+    public function hasHashSupport()
     {
         return function_exists('hash');
     }
@@ -38,7 +38,7 @@ trait Hash
      *
      * @return array
      */
-    final public function getAlgos()
+    public function getAlgos()
     {
         return hash_algos();
     }
@@ -50,7 +50,7 @@ trait Hash
      * @param  resource
      * @return resource|bool
      */
-    final public function copy($context)
+    public function copy($context)
     {
         if (false === isset($context) || false === is_resource($context)) {
             return false;
@@ -71,7 +71,7 @@ trait Hash
      * @param  string
      * @return bool
      */
-    final public function equals($string1, $string2)
+    public function equals($string1, $string2)
     {
         if (false === is_string($string1) || false === is_string($string2)) {
             return false;
@@ -94,7 +94,7 @@ trait Hash
      * @param  bool
      * @return string
      */
-    final public function file($algorithm, $filename, $raw_output = false)
+    public function file($algorithm, $filename, $raw_output = false)
     {
         return hash_file($algorithm, (string) $filename, $raw_output);
     }
@@ -108,7 +108,7 @@ trait Hash
      * @param  bool
      * @return string|bool
      */
-    final public function finalize($context, $raw_output = false)
+    public function finalize($context, $raw_output = false)
     {
         if (false === is_resource($context)) {
             return false;
@@ -128,7 +128,7 @@ trait Hash
      * @param  bool
      * @return string
      */
-    final public function hmacFile($algorithm, $filename, $key, $raw_output = false)
+    public function hmacFile($algorithm, $filename, $key, $raw_output = false)
     {
         return hash_hmac_file($algorithm, $filename, $key, $raw_output);
     }
@@ -144,7 +144,7 @@ trait Hash
      * @param  bool
      * @return string
      */
-    final public function hmac($algo, $data, $key, $raw_output = false)
+    public function hmac($algo, $data, $key, $raw_output = false)
     {
         return hash_hmac($algo, $data, $key, $raw_output);
     }
@@ -163,7 +163,7 @@ trait Hash
      * @param  string
      * @return resource
      */
-    final public function init($algorithm, $options = 0, $key = null)
+    public function initContext($algorithm, $options = 0, $key = null)
     {
         return hash_init($algorithm, $options, $key);
     }
@@ -186,7 +186,7 @@ trait Hash
      * @param  bool
      * @return string
      */
-    final public function pbkdf2($algo, $password, $salt, $iterations, $length = 0, $raw_output = false)
+    public function pbkdf2($algo, $password, $salt, $iterations, $length = 0, $raw_output = false)
     {
         return hash_pbkdf2($algo, $password, $salt, $iterations, $length, $raw_output);
     }
@@ -202,7 +202,7 @@ trait Hash
      * @param  resource
      * @return bool
      */
-    final public function updateFile($hcontext, $filename, $scontext = null)
+    public function updateFromFile($hcontext, $filename, $scontext = null)
     {
         if (false === is_resource($hcontext)) {
             return false;
@@ -223,7 +223,7 @@ trait Hash
      * @param  int
      * @return int|bool
      */
-    final public function updateStream($context, $handle, $length = -1)
+    public function updateFromStream($context, $handle, $length = -1)
     {
         if (false === is_resource($context) || false === is_resource($handle)) {
             return false;
@@ -241,7 +241,7 @@ trait Hash
      * @param  string
      * @return string|bool
      */
-    final public function update($context, $data)
+    public function updateContext($context, $data)
     {
         if (false === is_resource($context)) {
             return false;
@@ -262,7 +262,7 @@ trait Hash
      * @param  bool
      * @return string|bool
      */
-    final public function generate($algo, $data, $raw_output = false)
+    public function generate($algo, $data, $raw_output = false)
     {
         if (false === isset($data) || true === empty($data)) {
             return false;
@@ -280,7 +280,7 @@ trait Hash
      * @param  string $data
      * @return string
      */
-    public static function sha256($data, $binary = false)
+    public function sha256($data, $binary = false)
     {
     	return openssl_digest($data, 'SHA256', $binary);
     }
@@ -294,7 +294,7 @@ trait Hash
      * @param  string $data
      * @return string
      */
-    public static function sha512($data)
+    public function sha512($data)
     {
     	return openssl_digest($data, 'sha512');
     }
@@ -307,7 +307,7 @@ trait Hash
      * @param  string $key
      * @return string
      */
-    public static function sha512hmac($data, $key)
+    public function sha512hmac($data, $key)
     {
     	return hash_hmac('SHA512', $data, $key);
     }
@@ -318,7 +318,7 @@ trait Hash
      * @param  string $data
      * @return string
      */
-    public static function ripe160($data, $binary = false)
+    public function ripe160($data, $binary = false)
     {
     	return openssl_digest($data, 'ripemd160', $binary);
     }
@@ -329,7 +329,7 @@ trait Hash
      * @param  string $data
      * @return string
      */
-    public static function sha256ripe160($data)
+    public function sha256ripe160($data)
     {
     	return bin2hex(self::ripe160(self::sha256($data, true), true));
     }
@@ -340,7 +340,7 @@ trait Hash
      * @param  string $data
      * @return string
      */
-    public static function twoSha256($data, $binary = false)
+    public function twoSha256($data, $binary = false)
     {
     	return self::sha256(self::sha256($data, $binary), $binary);
     }

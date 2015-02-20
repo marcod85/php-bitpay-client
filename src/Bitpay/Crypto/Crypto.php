@@ -26,19 +26,21 @@ abstract class Crypto extends Math\Math
 	 * http://www.secg.org/collateral/sec2_final.pdf
 	 * also: https://en.bitcoin.it/wiki/Secp256k1
 	 */
-	const A = '00';
-	const B = '07';
-	const G = '0479BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8';
-	const H = '01';
-	const N = 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141';
-	const P = 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F';
+	const A  = '0x00';
+	const B  = '0x07';
+	const G  = '0x0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8';
+	const Gx = '0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798';
+	const Gy = '0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8';
+	const H  = '0x01';
+	const N  = '0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141';
+	const P  = '0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f';
 
 	/**
 	 * Type 2 (ephemeral)
 	 *
 	 * @var string
 	 */
-	const SIN_TYPE = '02';
+	const SIN_TYPE = '0x02';
 
 	/**
 	 * Always the prefix!
@@ -46,66 +48,61 @@ abstract class Crypto extends Math\Math
 	 *
 	 * @var string
 	 */
-	const SIN_VERSION = '0F';
+	const SIN_VERSION = '0x0F';
+
+	/**
+	 * @var array
+	 */
+	private $fingerprintData = array();
 
 	/**
 	 * @var string
 	 */
-	private $sigData;
-
-	/**
-	 * @var string
-	 */
-	private $finHash;
-
-	/**
-	 * @var boolean
-	 */
-	private $hasOpenSSL;
+	private $fingerprintHash = '';
 
 	/**
 	 * @var SinKey
 	 */
-	private $sin;
+	private $sin = null;
 
 	/**
 	 * @var PrivateKey
 	 */
-	private $privateKey;
+	private $privateKey = null;
 
 	/**
 	 * @var string
 	 */
-	private $hex;
+	private $hex = '';
 
 	/**
 	 * @var string
 	 */
-	private $dec;
+	private $dec = '';
 
 	/**
 	 * @var string
 	 */
-	private $id;
-
-	/**
-	 * MUST be a HEX value
-	 *
-	 * @var string
-	 */
-	private $x;
+	private $id = '';
 
 	/**
 	 * MUST be a HEX value
 	 *
 	 * @var string
 	 */
-	private $y;
+	private $x = '';
+
+	/**
+	 * MUST be a HEX value
+	 *
+	 * @var string
+	 */
+	private $y = '';
 
 	/**
 	 * @var PublicKey
 	 */
-	private $publicKey;
+	private $publicKey = null;
 
 	/**
 	 * @var string
@@ -118,83 +115,17 @@ abstract class Crypto extends Math\Math
 	private $pemDecoded = array();
 
 	/**
-	 * Returns the 'a' curve param in hex.
+	 * Public constructor method to initialize important class properties.
 	 *
-	 * @return string
+	 * @see \Bitpay\Crypto\Math\Math::__construct()
 	 */
-	public function aHex()
+	public function __construct()
 	{
-		return '0x' . strtolower(self::A);
-	}
+		parent::__construct();
 
-	/**
-	 * Returns the 'a' curve param in hex.
-	 *
-	 * @return string
-	 */
-	public function bHex()
-	{
-		return '0x' . strtolower(self::B);
-	}
-
-	/**
-	 * Returns the 'a' curve param in hex.
-	 *
-	 * @return string
-	 */
-	public function gHex()
-	{
-		return '0x' . strtolower(self::G);
-	}
-
-	/**
-	 * Returns the 'a' curve param in hex.
-	 *
-	 * @return string
-	 */
-	public function gxHex()
-	{
-		return '0x' . substr(strtolower(self::G), 0, 64);
-	}
-
-	/**
-	 * Returns the 'a' curve param in hex.
-	 *
-	 * @return string
-	 */
-	public function gyHex()
-	{
-		return '0x' . substr(strtolower(self::G), 66, 64);
-	}
-
-	/**
-	 * Returns the 'a' curve param in hex.
-	 *
-	 * @return string
-	 */
-	public function hHex()
-	{
-		return '0x' . strtolower(self::H);
-	}
-
-	/**
-	 * Returns the 'a' curve param in hex.
-	 *
-	 * @return string
-	 */
-	public function nHex()
-	{
-		return '0x' . strtolower(self::N);
-	}
-
-	/**
-	 * Returns the 'a' curve param in hex.
-	 *
-	 * @return string
-	 */
-	public function pHex()
-	{
-		return '0x' . strtolower(self::P);
+		$this->hasOpenSSLSupport();
+		$this->hasHashSupport();
+		$this->hasMcryptSupport();
 	}
 
 	/**
@@ -228,6 +159,20 @@ abstract class Crypto extends Math\Math
 	}
 
 	/**
+	 * Returns the fingerprint parameter for the Crypto object.
+	 *
+	 * @return string
+	 */
+	public function getFingerprint()
+	{
+		if (true === empty($this->fingerprintHash)) {
+            $this->generateFingerprint();
+		}
+
+		return $this->fingerprintHash;
+	}
+
+	/**
 	 * Returns the x-coordinate parameter for this object.
 	 *
 	 * @return string
@@ -258,29 +203,6 @@ abstract class Crypto extends Math\Math
 	}
 
 	/**
-	 * Generates a cryptographically secure random number using
-	 * the OpenSSL extension for PHP. Otherwise, throw exception.
-	 *
-	 * @param  int        $bytes  The number of random bytes to generate.
-	 * @return string
-	 * @throws \Exception
-	 */
-	public function generateRandom($bytes = 32)
-	{
-		if (!$this->hasOpenSSL()) {
-			throw new \Exception('[ERROR] In PrivateKey::generateRandom(): The OpenSSL extension is missing or too old.');
-		}
-
-		$random = openssl_random_pseudo_bytes($bytes, $isStrong);
-
-		if (!$random || !$isStrong) {
-			throw new \Exception('[ERROR] In PrivateKey::generateRandom(): Could not generate a cryptographically strong random number.');
-		}
-
-		return $random;
-	}
-
-	/**
 	 * Decodes PEM data to retrieve the keypair.
 	 *
 	 * @param  string $pem_data The data to decode.
@@ -289,9 +211,7 @@ abstract class Crypto extends Math\Math
 	 */
 	public function pemDecode($pem_data)
 	{
-		if (false === isset($pem_data) || true === empty($pem_data)) {
-			throw new \Exception('[ERROR] In PrivateKey::pemDecode(): Missing or invalid pem_data parameter.');
-		}
+		$this->argCheck($pem_data);
 
 		$beg_ec_text = '-----BEGIN EC PRIVATE KEY-----';
 		$end_ec_text = '-----END EC PRIVATE KEY-----';
@@ -396,7 +316,8 @@ abstract class Crypto extends Math\Math
 	}
 
 	/**
-	 * Assigns the object to the privateKey property.
+	 * Assigns the Crypto::privateKey property
+	 * to an instance of a PrivateKey object.
 	 *
 	 * @param  PrivateKey
 	 * @return self
@@ -409,6 +330,9 @@ abstract class Crypto extends Math\Math
 	}
 
 	/**
+	 * Assigns the Crypto::publicKey property
+	 * to an instance of a PublicKey object.
+	 *
 	 * @param  PublicKey
 	 * @return self
 	 */
@@ -420,6 +344,8 @@ abstract class Crypto extends Math\Math
 	}
 
 	/**
+	 * Either returns existing or generates a new public key object.
+	 *
 	 * @return PublicKey
 	 */
 	public function getPublicKey()
@@ -427,9 +353,7 @@ abstract class Crypto extends Math\Math
 		if (null === $this->publicKey) {
 			$this->publicKey = new PublicKey();
 
-			if (false === isset($this->publicKey) || true === empty($this->publicKey)) {
-				throw new \Exception('[ERROR] In Crypto::getPublicKey: Could not instantiate new PublicKey object.');
-			}
+			$this->argCheck($this->publicKey);
 
 			$this->publicKey->setPrivateKey($this);
 			$this->publicKey->generate();
@@ -439,6 +363,8 @@ abstract class Crypto extends Math\Math
 	}
 
 	/**
+	 * Either returns existing or generates a new SIN object.
+	 *
 	 * @return Sin
 	 */
 	public function getSin()
@@ -446,9 +372,7 @@ abstract class Crypto extends Math\Math
 		if (null === $this->sin) {
 			$this->sin = new Sin();
 
-			if (false === isset($this->publicKey) || true === empty($this->publicKey)) {
-				throw new \Exception('[ERROR] In Crypto::getSin: Could not instantiate new SIN object.');
-			}
+			$this->argCheck($this->sin);
 
 			$this->sin->setPublicKey($this);
 			$this->sin->generate();
@@ -458,14 +382,45 @@ abstract class Crypto extends Math\Math
 	}
 
 	/**
-	 * @return boolean
+	 * Generates a string of environment information and
+	 * takes the hash of that value to use as the env
+	 * fingerprint.
+	 *
+	 * @return string
 	 */
-	private function hasOpenSSL()
+	private function generateFingerprint()
 	{
-		if (null === self::$hasOpenSSL) {
-			self::$hasOpenSSL = extension_loaded('openssl');
+		if (true === empty($this->fingerprintHash)) {
+			return $this->fingerprintHash;
 		}
 
-		return self::$hasOpenSSL;
+		$finHash = '';
+		$sigData = array();
+
+		$serverVariables = array(
+				'server_software',
+				'server_name',
+				'server_addr',
+				'server_port',
+				'document_root',
+		);
+
+		foreach ($_SERVER as $k => $v) {
+			if (in_array(strtolower($k), $serverVariables)) {
+				$sigData[] = $v;
+			}
+		}
+
+		$sigData[] = phpversion();
+		$sigData[] = get_current_user();
+		$sigData[] = php_uname('s') . php_uname('n') . php_uname('m') . PHP_OS . PHP_SAPI . ICONV_IMPL . ICONV_VERSION;
+		$sigData[] = sha1_file(__FILE__);
+
+		$finHash = implode($sigData);
+		$finHash = sha1(str_ireplace(' ', '', $finHash) . strlen($finHash) . metaphone($finHash));
+		$finHash = sha1($finHash);
+
+		return $finHash;
 	}
+
 }

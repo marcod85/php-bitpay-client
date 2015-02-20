@@ -24,9 +24,13 @@ final class Math extends Number
     private $encoder = null;
 
     /**
+     * Public constructor method to initialize important class properties.
+     *
 	 * @see \Bitpay\Crypto\Math\Number::__construct()
 	 */
 	public function __construct() {
+		parent::__construct();
+
 	    if (extension_loaded('gmp')) {
             $this->engine = new GmpEngine();
         } else if (extension_loaded('bcmath')) {
@@ -36,7 +40,7 @@ final class Math extends Number
         }
 
         if ($this->encoder == null) {
-
+        	$this->engCheck();
         }
 	}
 
@@ -194,7 +198,7 @@ final class Math extends Number
 
     /**
      * Converts one base to another. Current valid values
-     * are 2, 8, 10, 16, and 256.
+     * are 2, 8, 10, 16, 58 and 256.
      *
      * @param  string  $number The number to convert.
      * @param  string  $base   The base to convert to.
@@ -204,6 +208,11 @@ final class Math extends Number
     public function baseConvert($number, $base)
     {
     	$this->argCheck($number);
+
+    	// TODO:
+    	// if the number is good, determine what base it
+    	// is now because to convert from certain bases
+    	// we will have to do some specialized processing.
 
     	$dv     = '';
     	$byte   = '';
@@ -217,6 +226,15 @@ final class Math extends Number
     		$rem    = $this->mod($number, $base);
     		$number = $dv;
     		$byte   = $byte . $digits[$rem];
+    	}
+
+    	// A bit of special processing for base-58 encoding only.
+    	if ($base == 58) {
+        	for ($i = 0; $i < strlen($byte) && substr($byte, $i, 2) == '00'; $i += 2) {
+    		    $byte .= substr($digits, 0, 1);
+    	    }
+
+    	    $byte = strrev($byte);
     	}
 
     	return $byte;

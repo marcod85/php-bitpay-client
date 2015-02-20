@@ -28,9 +28,7 @@
         "ext-curl": "*",
         "ext-json": "*",
         "ext-openssl": "*",
-        "ext-mcrypt": "*",
-        "symfony/config": "2.5.*",
-        "symfony/dependency-injection": "2.5.*"
+        "ext-mcrypt": "*"
     },
     "require-dev": {
         "behat/behat": "2.5.*@stable",

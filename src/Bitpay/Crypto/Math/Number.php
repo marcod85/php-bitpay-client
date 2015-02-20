@@ -17,12 +17,15 @@ namespace Bitpay\Crypto\Math;
 /**
  * Abstract class representing validation and number theory methods.
  */
-abstract class Number
+abstract class Number extends \stdClass
 {
 	const NUM_DEC = 1;
     const NUM_HEX = 2;
     const NUM_BIN = 3;
-    const NUM_BAD = 0;
+    const NUM_B58 = 4;
+    const NUM_OCT = 5;
+    const NUM_NUL = 0;
+    const NUM_BAD = -1;
 
     const BASE58_CHARS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
     const HEX_CHARS    = '0123456789abcdef';
@@ -31,6 +34,20 @@ abstract class Number
     const BINARY_CHARS = '01';
 
     const INFINITY     = 'infinity';
+
+    /**
+     * Value (quantity) of the arbitrary precision number itself.
+     *
+     * @var string
+     */
+    private $value = '0';
+
+    /**
+     * Type (base) of the number represented.
+     *
+     * @var string
+     */
+    private $base = '';
 
     /**
      * Maximum intger size for this implementation of PHP.
@@ -48,8 +65,10 @@ abstract class Number
 
 	/**
 	 * Public constructor method to initialize important class properties.
+	 *
+	 * @param string $value
 	 */
-	public function __construct()
+	public function __construct($value = '0')
 	{
 		if (PHP_INT_SIZE > 4) {
 			$this->maxint = 10;
@@ -60,11 +79,14 @@ abstract class Number
 		for ($x = 0; $x < 256; $x++) {
 			$this->digits[$x] = chr($x);
 		}
+
+		if (false === empty($value)) {
+			$this->value = $value;
+		}
 	}
 
 	/**
-	 * Checks to see if the $data we're
-	 * working with is valid or not.
+	 * Checks to see if the $data we're working with is valid or not.
 	 *
 	 * @param mixed $data
 	 */
@@ -160,5 +182,19 @@ abstract class Number
 	public function hasValidDec()
 	{
 		return (true === isset($this->dec) && false === empty($this->dec) && true === ctype_digit($this->dec));
+	}
+
+	/**
+	 * Attempts to determine what type of number this is.
+	 * I.e., is this a hex, decimal, binary, or encoded
+	 * value of a different kind.
+	 *
+	 * @param  string $number
+	 * @return string $type
+	 * @todo   Fill this in!
+	 */
+	private function numType($number)
+	{
+		// TODO
 	}
 }

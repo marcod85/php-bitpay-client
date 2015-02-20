@@ -26,17 +26,22 @@ trait Mcrypt
      *
      * @return bool
      */
-    final public static function hasSupport()
+    public function hasMcryptSupport()
     {
         return function_exists('mcrypt_encrypt');
     }
 
     /**
-     * @inheritdoc
+     * Gets the list of all supported algorithms in the lib_dir parameter.
+     * PHP 4.0.2, PHP 5
      */
-    final public function getAlgos()
+    public function getMcryptAlgos($lib_dir = '')
     {
-        return mcrypt_list_algorithms();
+    	if (true === empty($lib_dir)) {
+    		return mcrypt_list_algorithms();
+    	} else {
+    		return mcrypt_list_algorithms($lib_dir);
+    	}
     }
 
     /**
@@ -48,7 +53,7 @@ trait Mcrypt
      * @param  string   $cipher_type
      * @return int|bool
      */
-    final public function getIVSize($cipher_type = MCRYPT_TRIPLEDES)
+    public function getMcryptIVSize($cipher_type = MCRYPT_TRIPLEDES)
     {
         $block_mode = 'cbc';
 
@@ -65,7 +70,7 @@ trait Mcrypt
      * @param  string $cipher_type
      * @return int
      */
-    final public function getKeySize($cipher_type = MCRYPT_TRIPLEDES)
+    public function getMcryptKeySize($cipher_type = MCRYPT_TRIPLEDES)
     {
         $block_mode = 'cbc';
 
@@ -86,17 +91,16 @@ trait Mcrypt
      * @param  string  $cipher_type
      * @return boolean
      */
-    final public function algoSelfTest($cipher_type = MCRYPT_TRIPLEDES)
+    public function mcryptAlgoSelfTest($cipher_type = MCRYPT_TRIPLEDES)
     {
         return mcrypt_module_self_test($cipher_type);
     }
 
     /**
-     *
      * Encrypts $text based on your $key and $iv.  The returned text is
      * base-64 encoded to make it easier to work with in various scenarios.
      * Default cipher is MCRYPT_TRIPLEDES but you can substitute depending
-     * on your specific encryption needs.
+     * on your specific encryption needs. Note: This is a symmetric method.
      *
      * @param  string    $text
      * @param  string    $key
@@ -104,10 +108,10 @@ trait Mcrypt
      * @param  int       $bit_check
      * @param  string    $cipher_type
      * @return string    $text
-     * @throws Exception $e
+     * @throws \Exception $e
      *
      */
-    final public function encrypt($text, $key = '', $iv = '', $bit_check = 8, $cipher_type = MCRYPT_TRIPLEDES)
+    public function encrypt($text, $key = '', $iv = '', $bit_check = 8, $cipher_type = MCRYPT_TRIPLEDES)
     {
         try {
             /* Ensure the key & IV is the same for both encrypt & decrypt. */
@@ -137,11 +141,11 @@ trait Mcrypt
     }
 
     /**
-     *
      * Decrypts $text based on your $key and $iv.  Make sure you use the same key
      * and initialization vector that you used when encrypting the $text. Default
      * cipher is MCRYPT_TRIPLEDES but you can substitute depending on the cipher
-     * used for encrypting the text - very important.
+     * used for encrypting the text - very important. Note: This is a symmetric
+     * method.
      *
      * @param  string    $encrypted_text
      * @param  string    $key
@@ -149,10 +153,10 @@ trait Mcrypt
      * @param  int       $bit_check
      * @param  string    $cipher_type
      * @return string    $text
-     * @throws Exception $e
+     * @throws \Exception $e
      *
      */
-    final public function decrypt($encrypted_text, $key = '', $iv = '', $bit_check = 8, $cipher_type = MCRYPT_TRIPLEDES)
+    public function decrypt($encrypted_text, $key = '', $iv = '', $bit_check = 8, $cipher_type = MCRYPT_TRIPLEDES)
     {
         try {
             /* Ensure the key & IV is the same for both encrypt & decrypt. */

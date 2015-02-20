@@ -29,6 +29,8 @@ final class Point extends Crypto
      */
     public function __construct($x, $y)
     {
+    	parent::__construct();
+
         if (true === isset($x) && false === empty($x)) {
             $this->x = (string) $x;
         }
@@ -75,7 +77,14 @@ final class Point extends Crypto
         ) = unserialize($data);
     }
 
-    public static function doubleAndAdd($hex, Point $point)
+    /**
+     * Implemenation of the Double-and-Add algorithm.
+     *
+     * @param string $hex
+     * @param Point $point
+     * @return \Bitpay\Crypto\Point
+     */
+    public function doubleAndAdd($hex, Point $point)
     {
     	$tmp = self::decToBin($hex);
 

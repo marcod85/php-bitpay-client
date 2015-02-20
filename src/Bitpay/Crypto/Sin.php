@@ -18,8 +18,8 @@ use Bitpay\Crypto\Hash;
 use Bitpay\Crypto\Math\Base58;
 
 /**
- * Class that represents a Service Identification Number (SIN), see:
- * https://en.bitcoin.it/wiki/Identity_protocol_v1
+ * Class that represents a Service Identification Number (SIN),
+ * see: https://en.bitcoin.it/wiki/Identity_protocol_v1
  */
 class Sin extends Key
 {

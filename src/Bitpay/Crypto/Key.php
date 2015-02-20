@@ -26,6 +26,8 @@ abstract class Key extends Crypto implements \Serializable
      */
     public function __construct($id = null)
     {
+    	parent::__construct();
+
         $this->id = $id;
     }
 
@@ -35,7 +37,7 @@ abstract class Key extends Crypto implements \Serializable
      * @param  string $id
      * @return Key
      */
-    public static function create($id = null)
+    public function create($id = null)
     {
         $class = get_called_class();
 

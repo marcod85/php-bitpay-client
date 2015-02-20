@@ -15,20 +15,21 @@
 namespace Bitpay\Crypto;
 
 /**
- * Wrapper around the OpenSSL PHP Extension
+ * Wrapper around the OpenSSL PHP Extension.
  * @see http://php.net/manual/en/book.openssl.php
  */
 trait OpenSSL
 {
     /**
-     * Checks to see if this server has the PHP
-     * OpenSSL extension installed.
+     * Checks to see if this server has the PHP OpenSSL extension installed.
      *
      * @return bool
      */
-    final public static function hasSupport()
+    private function hasOpenSSLSupport()
     {
-        return function_exists('openssl_open');
+        if (!extension_loaded('openssl')) {
+        	throw new \Exception('[ERROR] In OpenSSL::hasOpenSSLSupport(): OpenSSL PHP extension missing. Cannot continue.');
+        }
     }
 
     /**
@@ -41,7 +42,7 @@ trait OpenSSL
      * @return array|boolean array of keys on success, boolean false on failure
      * @throws \Exception
      */
-    final public function generateKeypair($keybits = 512, $digest_alg = 'sha512')
+    public function generateOpenSSLKeypair($keybits = 512, $digest_alg = 'sha512')
     {
         try {
             /* see: http://www.php.net/manual/en/function.openssl-pkey-new.php */
@@ -119,12 +120,17 @@ trait OpenSSL
      * @param  int
      * @return string|bool
      */
-    final public function randomNumber($bytes = 32)
+    public function generateRandomNumber($bytes = 32)
     {
+    	// We want to enforce at least a 32-byte random number in our library.
+    	if (false === isset($bytes) || true === empty($bytes) || $bytes < 32) {
+    		$bytes = 32;
+    	}
+
         $random_data = openssl_random_pseudo_bytes($bytes, $cstrong);
 
         if (!$cstrong || !$random_data) {
-            return false;
+            throw new \Exception('[ERROR] In Crypto::generateRandom(): Could not generate a cryptographically strong random number.');
         } else {
             return bin2hex($random_data);
         }
@@ -137,7 +143,7 @@ trait OpenSSL
      * @param  string
      * @return int|bool
      */
-    final public function cypherIVLength($cypher = '')
+    public function getOpenSSLCypherIVLength($cypher = '')
     {
         return openssl_cipher_iv_length($cypher);
     }
