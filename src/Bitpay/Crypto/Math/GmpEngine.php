@@ -138,7 +138,7 @@ final class GmpEngine
 
         $x = strtolower(trim($x));
 
-        if (false === ctype_xdigit($x) && true === ctype_digit($x)) {
+        if (true === ctype_digit($x)) {
             // decimal number
             return $x;
         } else if (substr($x, 0, 2) != '0x' && true === ctype_xdigit($x)) {
